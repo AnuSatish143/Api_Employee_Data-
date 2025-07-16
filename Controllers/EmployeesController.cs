@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApiCoreCruds1.Interfaces;
 using WebApiCoreCruds1.Models;
 
 namespace WebApiCoreCruds1.Controllers
 {
-    //[ApiController]
     [Route("api/[controller]")]
     public class EmployeesController : Controller
     {
@@ -13,12 +13,14 @@ namespace WebApiCoreCruds1.Controllers
         {
             _repo = repository;
         }
-        [HttpGet]
+        [HttpGet("protected")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _repo.GetAllEmployeesAsync());
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Get(long id)
         {
             var item = await _repo.GetEmployeeByIdAsync(id);

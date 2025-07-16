@@ -3,10 +3,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebApiCoreCruds1.Interfaces;
 
 namespace WebApiCoreCruds1.Services
 {
-    public class TokenService
+    public class TokenService : IAuth
     {
         private readonly IConfiguration _configuration;
 
@@ -14,6 +15,11 @@ namespace WebApiCoreCruds1.Services
         {
             _configuration = configuration;
         }
+
+        //public string GenerateJwtToken(string username)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public string GenerateJwtToken(string username)
         {
@@ -29,6 +35,7 @@ namespace WebApiCoreCruds1.Services
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, "Admin"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

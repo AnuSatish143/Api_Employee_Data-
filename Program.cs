@@ -7,6 +7,8 @@ using WebApiCoreCruds1.Repositories;
 //Jwt
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using WebApiCoreCruds1.Services;
 //
 
 namespace WebApiCoreCruds1
@@ -22,6 +24,7 @@ namespace WebApiCoreCruds1
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             // Register Repository
             builder.Services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+            builder.Services.AddScoped<IAuth, TokenService>();
 
 
             // Add services to the container.
@@ -31,6 +34,30 @@ namespace WebApiCoreCruds1
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        Array.Empty<string>()
+    }});
+            });
 
             // JWT settings
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -68,7 +95,7 @@ namespace WebApiCoreCruds1
 
             // Configure the HTTP request pipeline.
 
-           // app.UseAuthorization();
+            // app.UseAuthorization();
 
 
             // Use authentication & authorization
